@@ -1,29 +1,35 @@
-# 🎬 Movie Recommendation System (Content-Based)
+# 🎬 Movie Recommendation System (Content-Based, Unsupervised)
 
 This project implements a **content-based movie recommendation system** using **unsupervised learning techniques**.  
-Movies are recommended based on semantic similarity of their content rather than user ratings or collaborative signals.
+Movies are recommended based on semantic similarity of their content and refined using filtering and ranking logic.
 
 ---
 
 ## 📌 Project Overview
 
 The system recommends movies similar to a given movie by:
-- analyzing textual metadata (overview, tags)
+- analyzing textual metadata (overview and tags)
 - computing semantic similarity using TF-IDF and cosine similarity
-- applying logical filters and ranking signals to refine recommendations
+- applying logical filters and ranking signals to improve relevance
 
-Unlike collaborative filtering, this system **does not rely on user interaction data** and works purely on movie attributes.
+The system does **not rely on user ratings as labels** and does not use collaborative filtering.
 
 ---
 
-## 🧠 Approach & Methodology
+## 🧠 Methodology
 
-### 1. Feature Engineering
-The following features are used:
+### 1. Data Cleaning
+- Removed duplicate movie entries to ensure index consistency
+- Reset dataframe index after cleaning
+- Handled missing values safely without introducing semantic bias
+
+---
+
+### 2. Feature Engineering
 
 **Similarity Features (Core ML):**
 - Movie overview
-- Tags (combined textual metadata)
+- Combined tags (genre, keywords, etc.)
 
 **Filtering / Constraints:**
 - Language (`original_language`, `spoken_languages`)
@@ -31,37 +37,39 @@ The following features are used:
 - Release status
 - Adult content flag
 
-**Ranking Signals (Post-similarity):**
+**Ranking Signals:**
 - Vote average
 - Vote count (log-scaled)
 - Popularity
 
+Each feature group is used strictly for its intended role.
+
 ---
 
-### 2. Vectorization
-- Text data is vectorized using **TF-IDF**
+### 3. Vectorization
+- Text features are vectorized using **TF-IDF**
 - N-grams are enabled to capture phrase-level semantics
 - Stopwords are removed
-- Resulting vectors are high-dimensional and sparse
+- Resulting vectors are sparse and high-dimensional
 
 ---
 
-### 3. Similarity Computation
-- **Cosine similarity** is used to measure semantic closeness between movies
-- For a given movie, the top-K most similar candidates are retrieved
+### 4. Similarity Computation
+- **Cosine similarity** is used to measure semantic closeness
+- For a given movie, top-K similar candidates are retrieved
 
 ---
 
-### 4. Filtering & Ranking
+### 5. Filtering & Ranking
 After similarity:
 - Movies are filtered based on availability, safety, language, and runtime
-- Remaining candidates are ranked using a weighted scoring function combining:
-  - similarity score
+- Remaining candidates are ranked using a weighted score combining:
+  - similarity
   - rating quality
   - confidence (vote count)
   - popularity
 
-This separation ensures clean system design and avoids feature leakage.
+This avoids feature leakage and keeps the system modular.
 
 ---
 
